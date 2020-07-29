@@ -1,4 +1,4 @@
 # showcase.prestashop
 Showcase Prestashop
-#Prestashop 1.7
--VERSION php 5.6
+## Prestashop 1.6
+- VERSION php 5.6
