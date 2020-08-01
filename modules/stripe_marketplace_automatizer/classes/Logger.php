@@ -3,7 +3,7 @@
 class Logger {
 
     public static function log($detail){
-        $this->logSQL($detail);
+        self::logSQL($detail);
     }
 
     public static function logSQL($detail){

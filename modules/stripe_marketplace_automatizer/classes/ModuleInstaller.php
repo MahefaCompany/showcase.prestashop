@@ -4,15 +4,15 @@ require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php
 
 class ModuleInstaller {
 
-    public function install(){
-        return $this->installSql();
+    public static function install(){
+        return $self::installSql();
     }
 
-    public function uninstall(){
-        return $this->uninstallSql();
+    public static function uninstall(){
+        return $self::uninstallSql();
     }
 
-    private function installSql(){
+    private static function installSql(){
         $request = "
             DROP TABLE IF EXISTS "._DB_PREFIX_."sma_logger;
             CREATE TABLE "._DB_PREFIX_."sma_logger ( 
@@ -28,7 +28,7 @@ class ModuleInstaller {
         Logger::log("ModuleInstaller::installSql");
     }
 
-    private function uninstallSql(){
+    private static function uninstallSql(){
         $request = "
             DROP TABLE IF EXISTS "._DB_PREFIX_."sma_logger;
         ";

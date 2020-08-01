@@ -37,7 +37,7 @@ class stripe_marketplace_automatizer extends Module
         $this->description = $this->l('Start accepting stripe payments today, directly from your shop!', $this->name);
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?', $this->name);
 
-        Logger::log("stripe_marketplace_automatizer::__construct");
+        // Logger::log("stripe_marketplace_automatizer::__construct");
     }
 
     public function install()
