@@ -6,9 +6,13 @@ class Logger {
         self::logSQL($detail);
     }
 
-    public static function logSQL($detail){
+    /**
+     * $detail : Array
+     */
+    public static function logSQL($source, $detail = []){
         \Db::getInstance()->insert('sma_logger', array(
-            'details' => $detail,
+            'source' => $source,
+            'details' => json_encode($detail),
         ));
     }
 

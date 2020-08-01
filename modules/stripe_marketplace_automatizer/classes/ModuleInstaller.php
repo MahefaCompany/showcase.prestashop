@@ -17,6 +17,7 @@ class ModuleInstaller {
             DROP TABLE IF EXISTS "._DB_PREFIX_."sma_logger;
             CREATE TABLE "._DB_PREFIX_."sma_logger ( 
                 `id` INT NOT NULL AUTO_INCREMENT , 
+                `source` VARCHAR(128) , 
                 `details` TEXT NOT NULL , 
                 `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
                 PRIMARY KEY (`id`)
