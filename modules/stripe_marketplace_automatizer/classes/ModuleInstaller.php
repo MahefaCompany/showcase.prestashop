@@ -23,9 +23,11 @@ class ModuleInstaller {
             );
         ";
 
-        \Db::getInstance()->execute($request);
+        $result = \Db::getInstance()->execute($request);
 
         Logger::log("ModuleInstaller::installSql");
+
+        return $result;
     }
 
     private static function uninstallSql(){
@@ -33,9 +35,11 @@ class ModuleInstaller {
             DROP TABLE IF EXISTS "._DB_PREFIX_."sma_logger;
         ";
 
-        \Db::getInstance()->execute($request);
+        $result = \Db::getInstance()->execute($request);
 
         Logger::log("ModuleInstaller::uninstallSql");
+
+        return $result;
     }
 
 }
