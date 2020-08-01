@@ -2,8 +2,8 @@
 
 class Logger {
 
-    public static function log($detail){
-        self::logSQL($detail);
+    public static function log($source, $detail = []){
+        self::logSQL($source, $detail);
     }
 
     /**
