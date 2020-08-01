@@ -5,11 +5,11 @@ require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php
 class ModuleInstaller {
 
     public static function install(){
-        return $self::installSql();
+        return self::installSql();
     }
 
     public static function uninstall(){
-        return $self::uninstallSql();
+        return self::uninstallSql();
     }
 
     private static function installSql(){
