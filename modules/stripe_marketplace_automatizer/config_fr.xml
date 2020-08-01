@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>stripe_marketplace_automatizer</name>
+	<displayName><![CDATA[Stripe Marketplace Automatizer]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Start accepting stripe payments today, directly from your shop!]]></description>
+	<author><![CDATA[Mahefa]]></author>
+	<tab><![CDATA[]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+	<is_configurable>0</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>

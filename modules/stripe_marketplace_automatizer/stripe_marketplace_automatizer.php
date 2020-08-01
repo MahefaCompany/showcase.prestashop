@@ -4,7 +4,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class stripe_marketplace_automatizer
+require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
+require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
+
+class stripe_marketplace_automatizer extends Module
 {
     public static $webhook_events = array(
         'charge.expired',
@@ -33,6 +36,8 @@ class stripe_marketplace_automatizer
         $this->displayName = $this->l('Stripe Marketplace Automatizer', $this->name);
         $this->description = $this->l('Start accepting stripe payments today, directly from your shop!', $this->name);
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?', $this->name);
+
+        Logger::log("stripe_marketplace_automatizer::__construct");
     }
 
     public function install()
@@ -41,12 +46,24 @@ class stripe_marketplace_automatizer
             return false;
         }
 
+        if(!ModuleInstaller::install()){
+            return false;
+        }
+
         return true;
     }
 
     public function uninstall()
     {
-        return parent::uninstall();
+        if (!parent::uninstall()) {
+            return false;
+        }
+
+        if(!ModuleInstaller::uninstall()){
+            return false;
+        }
+        
+        return true;
     }
 
 }
