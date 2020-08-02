@@ -1,0 +1,7 @@
+
+[{shop_url}] 
+
+{order_data}
+
+ 
+

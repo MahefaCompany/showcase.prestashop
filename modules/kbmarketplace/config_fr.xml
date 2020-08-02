@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>kbmarketplace</name>
+	<displayName><![CDATA[Knowband MarketPlace]]></displayName>
+	<version><![CDATA[4.0.2]]></version>
+	<description><![CDATA[Assurez-magasin que le march&eacute; o&ugrave; le client peut aussi devenir un vendeur et vendre leurs produits.]]></description>
+	<author><![CDATA[Knowband]]></author>
+	<tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[Êtes-vous sur de vouloir désinstaller?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>
