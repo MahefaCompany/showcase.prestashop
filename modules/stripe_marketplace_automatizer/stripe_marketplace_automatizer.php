@@ -7,6 +7,10 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 
+/**
+ * Author : Mahefa & Company
+ * @Email : abelmahefa@gmail.com
+ */
 class stripe_marketplace_automatizer extends Module
 {
     public static $webhook_events = array(
