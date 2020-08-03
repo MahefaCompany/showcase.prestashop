@@ -16,8 +16,12 @@ class WebHookStripe
 {
     private $uid;
 
+    private $db;
+
+
     public function __construct(){
         $this->uid = $this->generateUid();
+        $this->db = \Db::getInstance();
         $this->readStreamWebhooks();
     }
 
@@ -34,6 +38,7 @@ class WebHookStripe
             'GET' => $_GET,
             'POST' => $_POST,
             'payload' => $payload,
+            'order_seller' => $this->getOrderSeller($this->getOrders('115')),
         ], $this->uid);
         // die;
 
@@ -45,7 +50,7 @@ class WebHookStripe
             // Invalid payload
             Logger::log("WebHookStripe::readStreamWebhooks", [
                 'messages' => "Invalid payload",
-                'variablaTianaHojerena' => null,
+            //    'variablaTianaHojerena' => null,
             ], $this->uid, 'error');
             http_response_code(400);
             exit();
@@ -78,7 +83,18 @@ class WebHookStripe
 
     private function handlePaymentIntentSucceeded($paymentIntent){
         $cart = $this->getCartByPaymentIntentID($paymentIntent->id);
-        $order = $this->getOrdersByCartId($cart->id);
+        $orders = $this->getOrdersByCartId($cart);
+        $orders = $this->getOrderSeller($orders);
+        
+        for ($i=0; $i < sizeof($orders); $i++) { 
+            $this->transfert($orders[$i]['id_acct'], $orders[$i]['total_paid']);
+        }
+        
+    }
+
+    private function transfert($id_acct, $total_paid)
+    {
+        return null;
     }
 
     /**
@@ -97,12 +113,61 @@ class WebHookStripe
         return $this->getCart($paymentIntentID);
     }
 
-    private function getCart(){
-        return null;
+    private function getCart($paymentIntentID){
+        $request = "SELECT id_cart FROM " . _DB_PREFIX_ . "stripe_payment WHERE id_payment_intent = '$paymentIntentID'";
+        $row =  $this->db->getRow($request);
+        return ($row) ? $row['id_cart'] : $row;
     }
 
     private function getOrdersByCartId($cartId){
-        return null;
+        Logger::log("WebHookStripe::getOrdersByCartID", [
+            'messages' => "cardID:". $cartId,
+        ], $this->uid);
+
+        return $this->getOrders($cartId);
+    }
+
+    private function getOrders($cartID)
+    {
+        $request = "SELECT id_order, total_paid FROM " . _DB_PREFIX_ . "orders WHERE id_cart = '$cartID'";
+        return $this->db->executeS($request);
+    }
+
+    private function getSellerByOrderId($orderId){
+        Logger::log("WebHookStripe::getSellerByOrderId", [
+            'messages' => "orderID:". $orderId,
+        ], $this->uid);
+
+        return $this->getSeller($orderId);
+    }
+
+    private function getSeller($orderId)
+    {
+        $request = "SELECT id_seller FROM " . _DB_PREFIX_ . "kb_mp_seller_order_detail WHERE id_order = '$orderId'";
+        $row =  $this->db->getRow($request);
+        return ($row) ? $row['id_seller'] : $row;
+    }
+
+    private function getOrderSeller($orders)
+    {
+        $order_seller = array();
+        for ($i=0; $i < sizeof($orders); $i++) { 
+            $id_order = $orders[$i]['id_order'];
+            $id_seller = $this->getSeller($id_order);
+            $order_seller[$i]['id_order'] = $id_order;
+            $order_seller[$i]['id_seller'] = $id_seller;
+            $order_seller[$i]['id_acct'] = $this->getAcctId($id_seller);
+            $order_seller[$i]['total_paid'] = $orders[$i]['total_paid'];
+        }
+
+        return $order_seller;
+    }
+
+    private function getAcctId($id_seller)
+    {
+        $request = "SELECT id_acct FROM " . _DB_PREFIX_ . "sma_seller_acct WHERE id_seller = '$id_seller'";
+        $row =  $this->db->getRow($request);
+        return ($row) ? $row['id_acct'] : $row;
     }
 
     private function generateUid(){
