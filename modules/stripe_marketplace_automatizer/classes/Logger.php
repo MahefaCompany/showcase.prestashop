@@ -11,7 +11,7 @@ class Logger {
     }
 
     /**
-     * $detail : Array
+     * $detail => data : Array
      */
     public static function logSQL($source, $detail = [], $uid = '', $level = 'info'){
         \Db::getInstance()->insert('sma_logger', array(

@@ -7,6 +7,10 @@ require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
 /**
  * Author : Mahefa & Company
  * @Email : abelmahefa@gmail.com
+ * 
+ * https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/webhook.php
+ * https://devdocs.prestashop.com/1.7/development/database/db/
+ * 
  */
 class WebHookStripe
 {
@@ -41,6 +45,7 @@ class WebHookStripe
             // Invalid payload
             Logger::log("WebHookStripe::readStreamWebhooks", [
                 'messages' => "Invalid payload",
+                'variablaTianaHojerena' => null,
             ], $this->uid, 'error');
             http_response_code(400);
             exit();
@@ -73,9 +78,11 @@ class WebHookStripe
 
     private function handlePaymentIntentSucceeded($paymentIntent){
         $cart = $this->getCartByPaymentIntentID($paymentIntent->id);
+        $order = $this->getOrdersByCartId($cart->id);
     }
 
     /**
+     * Maka ny idCart (Prestashop)
      * https://sql.webmo.fr/pma-sqldedie/sql.php?db=sql10522_1&table=ps_stripe_payment&pos=0
      * https://sql.webmo.fr/pma-sqldedie/sql.php?db=sql10522_1&table=ps_stripe_payment_intent&pos=0
      * https://sql.webmo.fr/pma-sqldedie/sql.php?db=sql10522_1&table=ps_sma_logger&pos=0
@@ -87,7 +94,15 @@ class WebHookStripe
             'messages' => "paymentIntentID:". $paymentIntentID,
         ], $this->uid);
 
-        StripePayment::getBy($paymentIntentID);
+        return $this->getCart($paymentIntentID);
+    }
+
+    private function getCart(){
+        return null;
+    }
+
+    private function getOrdersByCartId($cartId){
+        return null;
     }
 
     private function generateUid(){
