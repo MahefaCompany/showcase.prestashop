@@ -3,6 +3,7 @@
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
+require_once 'stripe-php/init.php';
 
 /**
  * Author : Mahefa & Company
@@ -33,12 +34,10 @@ class WebHookStripe
         // Payload : https://gist.github.com/MahefaAbel/36be9a3e4a9ee10a756eae4a128faaf1
         $payload = @file_get_contents('php://input');
         $event = null;
-
         Logger::log("WebHookStripe::readStreamWebhooks", [
             'GET' => $_GET,
             'POST' => $_POST,
             'payload' => $payload,
-            'order_seller' => $this->getOrderSeller($this->getOrders('115')),
         ], $this->uid);
         // die;
 
@@ -87,14 +86,37 @@ class WebHookStripe
         $orders = $this->getOrderSeller($orders);
         
         for ($i=0; $i < sizeof($orders); $i++) { 
-            $this->transfert($orders[$i]['id_acct'], $orders[$i]['total_paid']);
+            if($orders[$i]['id_seller'] != null and $orders[$i]['id_seller'] != false and $orders[$i]['id_acct'] != null and $orders[$i]['id_acct'] != false)
+                $this->transfert($orders[$i]);
         }
         
     }
 
-    private function transfert($id_acct, $total_paid)
+    private function transfert($order)
     {
-        return null;
+        $amount = $order['total_paid'] -  (3*$order['total_paid']/100 + 0.40);
+        $amount = (int) ($amount * 100);
+
+        $stripe = new \Stripe\StripeClient(
+            'sk_test_51H9qbOLKOBZ05EFrMyMNKmxekuCiFvRSDWV27qRd351mIW7v0EUmaTcPtbP7LHzHrkIpduQ0O4Zt2trkVHf2aRWh00gSz9Tz2V'
+        );
+    
+        try{
+            $stripe->transfers->create([
+                'amount' => $amount,
+                'currency' => 'usd',
+                'destination' => $order['id_acct'],
+                'description' => 'Order no: ' . $order['id_order'] . ' SellerID: '. $order['id_seller'],
+            ]);
+        } catch (Exception $e) {
+            $this->db->insert('sma_transfer_rejected', array(
+                'id_seller' => $order['id_seller'],
+                'id_order' => $order['id_order'],
+                'id_acct' => $order['id_acct'],
+                'amount' => $amount,
+                'cause' => $e->getMessage(),
+            ));
+        }
     }
 
     /**
@@ -174,6 +196,5 @@ class WebHookStripe
         return md5(uniqid());
     }
 }
-
 // Run the hook
 new WebHookStripe();
