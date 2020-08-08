@@ -201,8 +201,8 @@ class stripe_marketplace_automatizer extends Module
                     //     'last_name' => 'Doe',
                     // ],
                     'company' => [
-                        'name' => 'Jane',
-                        // 'last_name' => 'Doe',
+                        'name' => $nom,
+                        // 'last_name' => $nom,
                     ],
                     'tos_shown_and_accepted' => true,
                 ],
@@ -222,7 +222,7 @@ class stripe_marketplace_automatizer extends Module
                 // 'business_profile' => [
                 //     'name' => $nom
                 // ],
-                'business_type' => "individual",
+                // 'business_type' => "individual",
                 'settings' => [
                     'payouts' => [
                         'schedule' => [

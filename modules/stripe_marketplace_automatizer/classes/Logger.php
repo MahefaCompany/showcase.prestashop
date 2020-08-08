@@ -14,6 +14,8 @@ class Logger {
             'source' => $source,
             'details' => "`".json_encode($detail)."`",
         ));
+        // $sql = 'INSERT INTO '._DB_PREFIX_.'sma_logger (source, details) VALUE (`'.pSQL($source).'`, `'.pSQL(json_encode($detail)).'`)';
+        // \Db::getInstance()->execute($sql);
     }
 
 }
