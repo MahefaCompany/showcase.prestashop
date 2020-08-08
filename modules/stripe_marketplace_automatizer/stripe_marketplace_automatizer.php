@@ -75,7 +75,7 @@ class stripe_marketplace_automatizer extends Module
 
 
 
-        // Logger::log("stripe_marketplace_automatizer::__construct");
+        // Logger::log("stripe_marketplace_automatizer::__construct:".__LINE__);
 
     }
 
@@ -135,7 +135,7 @@ class stripe_marketplace_automatizer extends Module
 
     public function hookActionCustomerAccountAdd($params)
     {
-        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
             'params' => $params,
         ]);
 
@@ -143,34 +143,34 @@ class stripe_marketplace_automatizer extends Module
             if(isset($params['newCustomer'])){
                 $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id);
                 if($data['id_seller'] != false){ // If seller
-                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                         'message' => "New customer (Seller)",
                     ], '');
                     $data['id_acct'] = $this->create_account($params['newCustomer']->firstname .' '. $params['newCustomer']->lastname);
                     $idSellerAcct = \Db::getInstance()->insert('sma_seller_acct', $data);
                     if(isset($data['id_acct'])){
-                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                             'message' => "Seller created (stripe and sma_seller_acct)",
                             'idSellerAcct' => $idSellerAcct
                         ], '');
                         $this->notifyOwnerThatSellerCreated($params['newCustomer'], $data['id_seller'], $data['id_acct']);
                     }else{
-                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                             'message' => "Seller not created (has a problem)",
                         ], '');
                     }
                 }else{
-                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                         'message' => "New customer (not seller)",
                     ], '');
                 }
             }else{
-                Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                     'message' => "params not have newCustomer object",
                 ], '', 'error');
             }
         }catch (Exception $e){
-            Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+            Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                 'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
@@ -194,7 +194,7 @@ class stripe_marketplace_automatizer extends Module
         $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
 
         try{
-            $tokenResuklt = $stripe->tokens->create([
+            $tokenResult = $stripe->tokens->create([
                 'account' => [
                     'individual' => [
                         'first_name' => 'Jane',
@@ -204,7 +204,7 @@ class stripe_marketplace_automatizer extends Module
                 ],
             ]);
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'tokenResuklt' => $tokenResuklt,
+                'tokenResult' => $tokenResult,
             ]);
 
             $createResult = $stripe->accounts->create([
@@ -226,7 +226,7 @@ class stripe_marketplace_automatizer extends Module
                         ],
                     ],
                 ],
-                'account_token' => $tokenResuklt->token->id,
+                'account_token' => $tokenResuklt->id,
             ]);
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
                 'createResult' => $createResult,
@@ -246,7 +246,7 @@ class stripe_marketplace_automatizer extends Module
             ]);
     
         }catch (Exception $e){
-            Logger::log("stripe_marketplace_automatizer::create_account", [
+            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
                 'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
