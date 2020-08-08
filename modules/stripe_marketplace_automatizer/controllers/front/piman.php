@@ -1,7 +1,8 @@
 <?php
 
 if(!isset($_GET['whstripe'])){
-    return;
+    http_response_code(400);
+    exit();
 }
 
 require_once __DIR__."/../../../../config/config.inc.php";
