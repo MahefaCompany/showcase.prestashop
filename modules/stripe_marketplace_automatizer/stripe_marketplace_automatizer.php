@@ -145,16 +145,30 @@ class stripe_marketplace_automatizer extends Module
             'params' => $params,
         ]);
 
-        if(isset($params['newCustomer'])){
-            $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id_customer);
-            if($data['id_seller'] != false){ // If seller
-                $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
-                \Db::getInstance()->insert('sma_seller_acct', $data);
+        try{
+            if(isset($params['newCustomer'])){
+                $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id);
+                if($data['id_seller'] != false){ // If seller
+                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                        'message' => "New customer (Seller)",
+                    ], '');
+                    $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
+                    \Db::getInstance()->insert('sma_seller_acct', $data);
+                }else{
+                    Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                        'message' => "New customer (not seller)",
+                    ], '');
+                }
+            }else{
+                Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                    'message' => "params not have newCustomer object",
+                ], '', 'error');
             }
-        }else{
+        }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
-                'message' => "params not have newCustomer object",
+                'message' => $e->getMessage(),
             ], '', 'error');
+            return null;
         }
         
     }
@@ -192,9 +206,7 @@ class stripe_marketplace_automatizer extends Module
                 ],
             ]);
     
-        }
-        catch (Exception $e)
-        {
+        }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account", [
                 'message' => $e->getMessage(),
             ], '', 'error');
