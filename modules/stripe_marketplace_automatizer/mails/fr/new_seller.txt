@@ -3,6 +3,8 @@ S'il vous plaît, remplir ses informartions sur le Dashboard Stripe .
 
 ID SELELR : {seller_id}
 
-NOM DU COMPTE STRIPE # : {seller_name}
+NOM DU COMPTE STRIPE  : {seller_name}
 
-ID COMPTE STRIPE : {attached_file} 	
+ID COMPTE STRIPE : {acct_id} 	
+
+Date d'inscription : {date_ins}

@@ -146,7 +146,7 @@ class stripe_marketplace_automatizer extends Module
                     Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
                         'message' => "New customer (Seller)",
                     ], '');
-                    $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
+                    $data['id_acct'] = $this->create_account($params['newCustomer']->firstname .' '. $params['newCustomer']->lastname);
                     $idSellerAcct = \Db::getInstance()->insert('sma_seller_acct', $data);
                     if(isset($data['id_acct'])){
                         Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
@@ -211,6 +211,20 @@ class stripe_marketplace_automatizer extends Module
                     ],
                 ],
             ]);
+
+            // Set your secret key. Remember to switch to your live secret key in production!
+            // See your keys here: https://dashboard.stripe.com/account/apikeys
+            \Stripe\Stripe::setApiKey(__STRIPE_KEY__);
+
+            \Stripe\Account::update(
+                $res->id,
+                [
+                    'tos_acceptance' => [
+                    'date' => time(),
+                    'ip' => $_SERVER['REMOTE_ADDR'], // Assumes you're not using a proxy
+                    ],
+                ]
+            );
     
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account", [
@@ -218,7 +232,6 @@ class stripe_marketplace_automatizer extends Module
             ], '', 'error');
             return null;
         }
-
         return $res->id;
     }
 
@@ -252,9 +265,10 @@ class stripe_marketplace_automatizer extends Module
             Put null if you don't want to send any. Example of array: */
          
             array(
-                '{seller_name}' => $newCustomer->lastname .' '. $newCustomer->firstname,
+                '{seller_name}' => $newCustomer->firstname .' '. $newCustomer->lastname,
                 '{seller_id}' =>  $idSeller,
-                '{acct_id}' =>  $idAcct
+                '{acct_id}' =>  $idAcct,
+                '{date_ins}' =>  date("d-m-Y") ." à ". date("h:i")
             ),
             // --------
          
