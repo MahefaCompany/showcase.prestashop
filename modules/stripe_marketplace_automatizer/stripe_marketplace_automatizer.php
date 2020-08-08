@@ -147,7 +147,18 @@ class stripe_marketplace_automatizer extends Module
                         'message' => "New customer (Seller)",
                     ], '');
                     $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
-                    \Db::getInstance()->insert('sma_seller_acct', $data);
+                    $idSellerAcct = \Db::getInstance()->insert('sma_seller_acct', $data);
+                    if(isset($data['id_acct'])){
+                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                            'message' => "Seller created (stripe and sma_seller_acct)",
+                            'idSellerAcct' => $idSellerAcct
+                        ], '');
+                        $this->notifyOwnerThatSellerCreated($params['newCustomer']);
+                    }else{
+                        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                            'message' => "Seller not created (has a problem)",
+                        ], '');
+                    }
                 }else{
                     Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
                         'message' => "New customer (not seller)",
@@ -209,6 +220,10 @@ class stripe_marketplace_automatizer extends Module
         }
 
         return $res->id;
+    }
+
+    private function notifyOwnerThatSellerCreated($newCustomer){
+        
     }
 
 }
