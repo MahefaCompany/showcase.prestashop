@@ -42,7 +42,6 @@ class WebHookStripe
             'POST' => $_POST,
             'payload' => $payload,
         ], $this->uid);
-        // die;
 
         try {
             $event = \Stripe\Event::constructFrom(

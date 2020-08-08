@@ -141,14 +141,17 @@ class stripe_marketplace_automatizer extends Module
 
     public function hookActionCustomerAccountAdd($params)
     {
-        dump("hookActionCustomerAccountAdd", $params);
-        die;
-        $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id_customer);
-        if($data['id_seller'] != false)
-        {
-            $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
-            \Db::getInstance()->insert('sma_seller_acct', $data);
-        }
+        Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+            'params' => $params,
+        ]);
+        return;
+
+        // $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id_customer);
+        // if($data['id_seller'] != false)
+        // {
+        //     $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
+        //     \Db::getInstance()->insert('sma_seller_acct', $data);
+        // }
     }
 
     private function getSellerByCustomerId($id_customer)
@@ -187,7 +190,10 @@ class stripe_marketplace_automatizer extends Module
         }
         catch (Exception $e)
         {
-            die($e->getMessage());
+            Logger::log("stripe_marketplace_automatizer::create_account", [
+                'message' => $e->getMessage(),
+            ], '', 'error');
+            return null;
         }
 
         return $res->id;
