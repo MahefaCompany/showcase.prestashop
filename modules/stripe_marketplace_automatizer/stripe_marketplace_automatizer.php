@@ -214,9 +214,7 @@ class stripe_marketplace_automatizer extends Module
 
             // Set your secret key. Remember to switch to your live secret key in production!
             // See your keys here: https://dashboard.stripe.com/account/apikeys
-            \Stripe\Stripe::setApiKey(__STRIPE_KEY__);
-
-            \Stripe\Account::update(
+            $stripe->accounts->update(
                 $res->id,
                 [
                     'tos_acceptance' => [
