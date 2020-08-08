@@ -171,7 +171,7 @@ class stripe_marketplace_automatizer extends Module
             }
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
-                'message' => mysql_real_escape_string($e->getMessage()),
+                'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
         }
@@ -196,9 +196,13 @@ class stripe_marketplace_automatizer extends Module
         try{
             $tokenResult = $stripe->tokens->create([
                 'account' => [
-                    'individual' => [
-                        'first_name' => 'Jane',
-                        'last_name' => 'Doe',
+                    // 'individual' => [
+                    //     'first_name' => 'Jane',
+                    //     'last_name' => 'Doe',
+                    // ],
+                    'company' => [
+                        'name' => 'Jane',
+                        // 'last_name' => 'Doe',
                     ],
                     'tos_shown_and_accepted' => true,
                 ],
@@ -218,7 +222,7 @@ class stripe_marketplace_automatizer extends Module
                 // 'business_profile' => [
                 //     'name' => $nom
                 // ],
-                // 'business_type' => "individual",
+                'business_type' => "individual",
                 'settings' => [
                     'payouts' => [
                         'schedule' => [
@@ -248,7 +252,7 @@ class stripe_marketplace_automatizer extends Module
     
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'message' => mysql_real_escape_string($e->getMessage()),
+                'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
         }
