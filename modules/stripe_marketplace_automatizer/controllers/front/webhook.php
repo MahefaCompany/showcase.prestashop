@@ -111,20 +111,25 @@ class WebHookStripe
         $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
     
         try{
-            $stripe->transfers->create([
+            $stripeTransfertCreateData = [
                 'amount' => $amount,
                 'currency' => __CURRENCY__,
                 'destination' => $order['id_acct'],
                 'description' => 'Order no: ' . $order['id_order'] . ' SellerID: '. $order['id_seller'],
-            ]);
+            ];
+            $stripe->transfers->create($stripeTransfertCreateData);
+            Logger::log("WebHookStripe::transfert", $stripeTransfertCreateData, $this->uid);
         } catch (Exception $e) {
-            $this->db->insert('sma_transfer_rejected', array(
+            $errorData = array(
                 'id_seller' => $order['id_seller'],
                 'id_order' => $order['id_order'],
                 'id_acct' => $order['id_acct'],
                 'amount' => $amount / 100,
                 'message' => $e->getMessage(),
-            ));
+            );
+            $this->db->insert('sma_transfer_rejected', $errorData);
+            Logger::log("WebHookStripe::transfert::sma_transfer_rejected", $errorData, $this->uid, 'error');
+        } finally{
         }
     }
 
