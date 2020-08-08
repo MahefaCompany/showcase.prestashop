@@ -29,7 +29,7 @@ class WebHookStripe
         $this->db = \Db::getInstance();
         $this->readStreamWebhooks();
 
-        ModuleInstaller::_uninstallTabById(187);
+        // ModuleInstaller::_uninstallTabById(187);
     }
 
     /**
