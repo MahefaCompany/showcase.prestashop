@@ -131,16 +131,33 @@ class ModuleInstaller {
         return true;
     }
 
-    protected static function _uninstallTab()
+    private static function _uninstallTab()
     {
         Logger::log("ModuleInstaller::_uninstallTab", [], "");
         
-        $tabId = (int)Tab::getIdFromClassName('AdminAcct');
+        self::_uninstallTabByClassName('AdminAcct');
+ 
+        return true;
+    }
+
+    private static function _uninstallTabByClassName($tabClassName){
+        $tabId = (int)Tab::getIdFromClassName($tabClassName);
         if (!$tabId) {
             return true;
         }
         $tab = new Tab($tabId);
         $tab->delete();
+ 
+        return true;
+    }
+    
+    public static function _uninstallTabById($tabId){
+        $tab = new Tab($tabId);
+        $tab->delete();
+
+        Logger::log("ModuleInstaller::_uninstallTab", [
+            'message' => ($tab->class_name ?? 'Le Module ')." a ete supprimé",
+        ], "");
  
         return true;
     }

@@ -2,6 +2,7 @@
 
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
+require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
 require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
 define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
@@ -27,6 +28,8 @@ class WebHookStripe
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
         $this->readStreamWebhooks();
+
+        ModuleInstaller::_uninstallTabById(187);
     }
 
     /**
