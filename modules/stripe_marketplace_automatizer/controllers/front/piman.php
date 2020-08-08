@@ -6,7 +6,8 @@ require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInst
 require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
 define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
-define("__CURRENCY__", "usd");
+// define("__CURRENCY__", "usd");
+define("__CURRENCY__", "eur");
 
 /**
  * Author : Mahefa & Company
@@ -47,8 +48,6 @@ class WebHookStripe
         $payload = @file_get_contents('php://input');
         $event = null;
         Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
-            'GET' => $_GET,
-            'POST' => $_POST,
             'payload' => $payload,
         ], $this->uid);
 
