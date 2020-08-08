@@ -24,12 +24,18 @@ class WebHookStripe
 
 
     public function __construct(){
-        sleep(3);
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
+
+        sleep(3);
         $this->readStreamWebhooks();
 
         // ModuleInstaller::_uninstallTabById(187);
+
+        // Logger::log("WebHookStripe::readStreamWebhooks", [
+        //     'pi' => "pi_1HDrJTLKOBZ05EFr9P15iYW4",
+        //     'idCart' => $this->getCart("pi_1HDrJTLKOBZ05EFr9P15iYW4"),
+        // ], $this->uid);
     }
 
     /**
@@ -139,14 +145,18 @@ class WebHookStripe
     }
 
     private function getCart($paymentIntentID){
-        $request = "SELECT id_cart FROM " . _DB_PREFIX_ . "stripe_payment WHERE id_payment_intent = '$paymentIntentID'";
+        $request = "SELECT id_cart FROM " . _DB_PREFIX_ . "stripe_payment WHERE id_payment_intent = '".$paymentIntentID."'";
         $idCart =  $this->db->getValue($request);
+        // if(!$idCart){
+        //     sleep(2);
+        //     $idCart =  $this->db->getValue($request);
+        // }
         return ($idCart) ? $idCart : false;
     }
 
     private function getOrdersByCartId($cartId){
         Logger::log("WebHookStripe::getOrdersByCartID", [
-            'messages' => "cardID:". $cartId,
+            'cartID' => $cartId,
         ], $this->uid);
 
         return $this->getOrders($cartId);
