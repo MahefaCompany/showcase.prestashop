@@ -46,7 +46,7 @@ class WebHookStripe
         // Payload : https://gist.github.com/MahefaAbel/36be9a3e4a9ee10a756eae4a128faaf1
         $payload = @file_get_contents('php://input');
         $event = null;
-        Logger::log("WebHookStripe::readStreamWebhooks", [
+        Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
             'GET' => $_GET,
             'POST' => $_POST,
             'payload' => $payload,
@@ -58,7 +58,7 @@ class WebHookStripe
             );
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
-            Logger::log("WebHookStripe::readStreamWebhooks", [
+            Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
                 'messages' => "Invalid payload",
             //    'variablaTianaHojerena' => null,
             ], $this->uid, 'error');
@@ -81,7 +81,7 @@ class WebHookStripe
             // ... handle other event types
             default:
                 // Unexpected event type
-                Logger::log("WebHookStripe::readStreamWebhooks", [
+                Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
                     'messages' => "Unexpected event type",
                 ], $this->uid, 'error');
                 http_response_code(400);
@@ -95,6 +95,10 @@ class WebHookStripe
         $cartId = $this->getCartByPaymentIntentID($paymentIntent->id);
         $orders = $this->getOrdersByCartId($cartId);
         $orders = $this->getOrderSeller($orders);
+
+        Logger::log("WebHookStripe::handlePaymentIntentSucceeded::".__LINE__, [
+            'orders' => $orders
+        ], $this->uid);
         
         for ($i=0; $i < sizeof($orders); $i++) { 
             if($orders[$i]['id_seller'] != null and $orders[$i]['id_seller'] != false and $orders[$i]['id_acct'] != null and $orders[$i]['id_acct'] != false)
@@ -118,7 +122,7 @@ class WebHookStripe
                 'description' => 'Order no: ' . $order['id_order'] . ' SellerID: '. $order['id_seller'],
             ];
             $stripe->transfers->create($stripeTransfertCreateData);
-            Logger::log("WebHookStripe::transfert", $stripeTransfertCreateData, $this->uid);
+            Logger::log("WebHookStripe::transfert::".__LINE__, $stripeTransfertCreateData, $this->uid);
         } catch (Exception $e) {
             $errorData = array(
                 'id_seller' => $order['id_seller'],
@@ -128,7 +132,7 @@ class WebHookStripe
                 'message' => $e->getMessage(),
             );
             $this->db->insert('sma_transfer_rejected', $errorData);
-            Logger::log("WebHookStripe::transfert::sma_transfer_rejected", $errorData, $this->uid, 'error');
+            Logger::log("WebHookStripe::transfert::sma_transfer_rejected::".__LINE__, $errorData, $this->uid, 'error');
         } finally{
         }
     }
@@ -142,7 +146,7 @@ class WebHookStripe
      * 
      */
     private function getCartByPaymentIntentID($paymentIntentID){
-        Logger::log("WebHookStripe::getCartByPaymentIntentID", [
+        Logger::log("WebHookStripe::getCartByPaymentIntentID::".__LINE__, [
             'messages' => "paymentIntentID:". $paymentIntentID,
         ], $this->uid);
 
@@ -160,7 +164,7 @@ class WebHookStripe
     }
 
     private function getOrdersByCartId($cartId){
-        Logger::log("WebHookStripe::getOrdersByCartID", [
+        Logger::log("WebHookStripe::getOrdersByCartID::".__LINE__, [
             'cartID' => $cartId,
         ], $this->uid);
 
@@ -174,7 +178,7 @@ class WebHookStripe
     }
 
     private function getSellerByOrderId($orderId){
-        Logger::log("WebHookStripe::getSellerByOrderId", [
+        Logger::log("WebHookStripe::getSellerByOrderId::".__LINE__, [
             'messages' => "orderID:". $orderId,
         ], $this->uid);
 
