@@ -171,7 +171,7 @@ class stripe_marketplace_automatizer extends Module
             }
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
-                'message' => addslashes($e->getMessage()),
+                'message' => mysql_real_escape_string($e->getMessage()),
             ], '', 'error');
             return null;
         }
@@ -215,10 +215,10 @@ class stripe_marketplace_automatizer extends Module
                   'card_payments',
                   'transfers',
                 ],
-                'business_profile' => [
-                    'name' => $nom
-                ],
-                'business_type' => "individual",
+                // 'business_profile' => [
+                //     'name' => $nom
+                // ],
+                // 'business_type' => "individual",
                 'settings' => [
                     'payouts' => [
                         'schedule' => [
@@ -248,7 +248,7 @@ class stripe_marketplace_automatizer extends Module
     
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'message' => addslashes($e->getMessage()),
+                'message' => mysql_real_escape_string($e->getMessage()),
             ], '', 'error');
             return null;
         }
