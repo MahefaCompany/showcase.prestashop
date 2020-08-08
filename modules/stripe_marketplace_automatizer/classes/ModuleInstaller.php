@@ -53,7 +53,7 @@ class ModuleInstaller {
             );
 
             
-            CREATE TABLE `"._DB_PREFIX_."sma_transfer_rejected` (
+            CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."sma_transfer_rejected` (
                 `id` INT NOT NULL AUTO_INCREMENT , 
                 `id_seller` int(11) NOT NULL,
                 `id_order` int(11) NOT NULL,
