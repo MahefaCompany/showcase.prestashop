@@ -223,7 +223,114 @@ class stripe_marketplace_automatizer extends Module
     }
 
     private function notifyOwnerThatSellerCreated($newCustomer){
-        
+        Mail::Send(
+ 
+            // == REQUIRED FIELDS ARE BELOW ==
+         
+            /* -- Language id --
+            Basic context (if available): $this->context->language->id
+            Alternative context: Context::getContext()->language->id
+            Default store language: Configuration::get('PS_LANG_DEFAULT') */
+         
+            Context::getContext()->language->id,
+            // --------
+         
+            /* -- Template name --
+            Put your mail template into each language folder of /mails/{lang_iso}/ in .html and .txt format. 
+            Ex.: my_mail_template.html and my_mail_template.txt.
+            You can make your own /mails/ directory with subdirectories with all your language names (just look into /mails/ directory) anywhere you want to - The path will be specified later. */
+         
+            'new_seller',
+            // --------
+         
+            /* -- Topic -- */
+         
+            'Hello there!',
+            // --------
+         
+            /* -- Variables --
+            Put null if you don't want to send any. Example of array: */
+         
+            array(
+                '{seller_name}' => $mail_variable,
+                '{seller_name}' =>  $another_mail_variable
+            ),
+            // --------
+         
+            /* -- Receiver email address --
+            It can be customer email or your email - depending on your needs. 
+            Basic context (if available): $this->context->customer->email
+            Alternative context: Context::getContext()->language->email
+            Your main (BackOffice) email: Configuration::get("PS_SHOP_EMAIL") */
+          
+            "abelmahefa@gmail.com",
+            // --------
+         
+            // == OPTIONAL FIELDS ARE BELOW ==
+         
+            /* -- Receiver name --
+            This could be firstname and lastname of a customer.
+            You can get customer context and just put ->firstname , ->lastname.
+            Or just type any name you want to. */
+         
+            null,
+            // --------
+         
+            /* -- Sender email --
+            Could be your store email: Configuration::get("PS_SHOP_EMAIL")
+            but better put the null on this */
+         
+            null,
+            // --------
+         
+            /* -- Sender name --
+            Could be Your firstname and lastname, shopname or both. 
+            Get shop name: Configuration::get("PS_SHOP_NAME") */
+         
+            null,
+            // --------
+         
+            /* -- Attachment -- */
+         
+            null, // replace with $attach variable if you want to send an attachment,
+            // --------
+         
+            /* -- SMTP mode -- */
+         
+            null, // just put null here
+            // --------
+         
+            /* -- Mails directory -- 
+            Path to /mails/ directory with languages iso codes and with your templates. */
+         
+            _PS_MODULE_DIR_."/stripe_marketplace_automatizer/mails/",
+            // --------
+         
+            /* -- Die after error? --  */
+         
+            false,
+            // --------
+         
+            /* -- ID Shop -- 
+            Basic context (if available):$this->context->shop->id
+            Alternative context: Context::getContext()->shop->id
+            */
+         
+            null,
+            // --------
+         
+            /* -- BCC -- 
+            Bcc recipient(s) (email address). */
+            null,
+         
+            // --------
+         
+            /* -- Reply to --
+            Email address for setting the Reply-To header. */
+         
+            null
+            // --------
+        );
     }
 
 }
