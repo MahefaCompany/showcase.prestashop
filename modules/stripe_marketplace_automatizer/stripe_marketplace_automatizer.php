@@ -144,14 +144,19 @@ class stripe_marketplace_automatizer extends Module
         Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
             'params' => $params,
         ]);
-        return;
 
-        // $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id_customer);
-        // if($data['id_seller'] != false)
-        // {
-        //     $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
-        //     \Db::getInstance()->insert('sma_seller_acct', $data);
-        // }
+        if(isset($params['newCustomer'])){
+            $data['id_seller'] = $this->getSellerByCustomerId($params['newCustomer']->id_customer);
+            if($data['id_seller'] != false){ // If seller
+                $data['id_acct'] = $this->create_account($params['newCustomer']->lastname .' '. $params['newCustomer']->firstname);
+                \Db::getInstance()->insert('sma_seller_acct', $data);
+            }
+        }else{
+            Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
+                'message' => "params not have newCustomer object",
+            ], '', 'error');
+        }
+        
     }
 
     private function getSellerByCustomerId($id_customer)
