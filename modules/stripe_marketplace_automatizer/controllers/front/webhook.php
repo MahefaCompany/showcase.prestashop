@@ -27,7 +27,7 @@ class WebHookStripe
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
 
-        sleep(3);
+        sleep(5);
         $this->readStreamWebhooks();
 
         // ModuleInstaller::_uninstallTabById(187);
@@ -147,10 +147,10 @@ class WebHookStripe
     private function getCart($paymentIntentID){
         $request = "SELECT id_cart FROM " . _DB_PREFIX_ . "stripe_payment WHERE id_payment_intent = '".$paymentIntentID."'";
         $idCart =  $this->db->getValue($request);
-        // if(!$idCart){
-        //     sleep(2);
-        //     $idCart =  $this->db->getValue($request);
-        // }
+        if(!$idCart){   // Si c'est pas encore arrive, il faut attendre 5s de plus
+            sleep(5);
+            $idCart =  $this->db->getValue($request);
+        }
         return ($idCart) ? $idCart : false;
     }
 
