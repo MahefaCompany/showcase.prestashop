@@ -13,8 +13,10 @@ if (!defined('_PS_VERSION_')) {
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
-define("__COUNTRY__", "US");
-define("__CURRENCY__", "usd");
+// define("__COUNTRY__", "US");
+// define("__CURRENCY__", "usd");
+define("__COUNTRY__", "FR");
+define("__CURRENCY__", "eur");
 
 class stripe_marketplace_automatizer extends Module
 
@@ -169,7 +171,7 @@ class stripe_marketplace_automatizer extends Module
             }
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
-                'message' => $e->getMessage(),
+                'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
         }
@@ -183,13 +185,29 @@ class stripe_marketplace_automatizer extends Module
         return ($row) ? $row['id_seller'] : false;
     }
 
+    /**
+     * https://stripe.com/docs/api/tokens/create_account?lang=php
+     */
     public function create_account($nom)
     {
         require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
         $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
 
         try{
-            $res = $stripe->accounts->create([
+            $tokenResuklt = $stripe->tokens->create([
+                'account' => [
+                    'individual' => [
+                        'first_name' => 'Jane',
+                        'last_name' => 'Doe',
+                    ],
+                    'tos_shown_and_accepted' => true,
+                ],
+            ]);
+            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+                'tokenResuklt' => $tokenResuklt,
+            ]);
+
+            $createResult = $stripe->accounts->create([
                 'type' => 'custom',
                 'country' => __COUNTRY__,
                 'default_currency' => __CURRENCY__,
@@ -208,12 +226,14 @@ class stripe_marketplace_automatizer extends Module
                         ],
                     ],
                 ],
+                'account_token' => $tokenResuklt->token->id,
+            ]);
+            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+                'createResult' => $createResult,
             ]);
 
-            // Set your secret key. Remember to switch to your live secret key in production!
-            // See your keys here: https://dashboard.stripe.com/account/apikeys
-            $stripe->accounts->update(
-                $res->id,
+            $accUpdateResult = $stripe->accounts->update(
+                $createResult->id,
                 [
                     'tos_acceptance' => [
                     'date' => time(),
@@ -221,14 +241,17 @@ class stripe_marketplace_automatizer extends Module
                     ],
                 ]
             );
+            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+                'accUpdateResult' => $accUpdateResult,
+            ]);
     
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account", [
-                'message' => $e->getMessage(),
+                'message' => pSQL($e->getMessage()),
             ], '', 'error');
             return null;
         }
-        return $res->id;
+        return $createResult->id;
     }
 
     private function notifyOwnerThatSellerCreated($newCustomer, $idSeller, $idAcct){
