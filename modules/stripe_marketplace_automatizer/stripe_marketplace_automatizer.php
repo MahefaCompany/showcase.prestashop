@@ -153,7 +153,7 @@ class stripe_marketplace_automatizer extends Module
                             'message' => "Seller created (stripe and sma_seller_acct)",
                             'idSellerAcct' => $idSellerAcct
                         ], '');
-                        $this->notifyOwnerThatSellerCreated($params['newCustomer']);
+                        $this->notifyOwnerThatSellerCreated($params['newCustomer'], $data['id_seller'], $data['id_acct']);
                     }else{
                         Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd", [
                             'message' => "Seller not created (has a problem)",
@@ -222,7 +222,7 @@ class stripe_marketplace_automatizer extends Module
         return $res->id;
     }
 
-    private function notifyOwnerThatSellerCreated($newCustomer){
+    private function notifyOwnerThatSellerCreated($newCustomer, $idSeller, $idAcct){
         Mail::Send(
  
             // == REQUIRED FIELDS ARE BELOW ==
@@ -252,8 +252,9 @@ class stripe_marketplace_automatizer extends Module
             Put null if you don't want to send any. Example of array: */
          
             array(
-                '{seller_name}' => $mail_variable,
-                '{seller_name}' =>  $another_mail_variable
+                '{seller_name}' => $newCustomer->lastname .' '. $newCustomer->firstname,
+                '{seller_id}' =>  $idSeller,
+                '{acct_id}' =>  $idAcct
             ),
             // --------
          
@@ -263,7 +264,7 @@ class stripe_marketplace_automatizer extends Module
             Alternative context: Context::getContext()->language->email
             Your main (BackOffice) email: Configuration::get("PS_SHOP_EMAIL") */
           
-            "abelmahefa@gmail.com",
+            "andriniainanirison@gmail.com",
             // --------
          
             // == OPTIONAL FIELDS ARE BELOW ==
