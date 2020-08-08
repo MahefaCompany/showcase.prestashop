@@ -51,6 +51,7 @@ class ModuleInstaller {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `id_seller` int(11) NOT NULL,
                 `id_acct` varchar(255) NOT NULL,
+                `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
                 PRIMARY KEY (`id`)
             );
 
@@ -156,7 +157,7 @@ class ModuleInstaller {
         $tab->delete();
 
         Logger::log("ModuleInstaller::_uninstallTab", [
-            'message' => ($tab->class_name ?? 'Le Module ')." a ete supprimÃ©",
+            'message' => ($tab->class_name ?? 'Le Module ')." a ete supprimé",
         ], "");
  
         return true;
