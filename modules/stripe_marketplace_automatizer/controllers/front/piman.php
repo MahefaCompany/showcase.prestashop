@@ -1,8 +1,10 @@
 <?php
 
 if(!isset($_GET['whstripe'])){
+    // die("tsy tafiditra");
     return;
 }
+// die("tafiditra");
 
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
@@ -17,7 +19,7 @@ define("__CURRENCY__", "eur");
  * Author : Mahefa & Company
  * @Email : abelmahefa@gmail.com
  * 
- * https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/webhook.php
+ * https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/piman.php
  * https://devdocs.prestashop.com/1.7/development/database/db/
  * 
  */
@@ -225,3 +227,4 @@ class WebHookStripe
 
 // Run the hook
 new WebHookStripe();
+die;    // Stop
