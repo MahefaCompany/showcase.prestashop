@@ -11,16 +11,10 @@ if (!defined('_PS_VERSION_')) {
 
 
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
-
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
 define("__COUNTRY__", "US");
 define("__CURRENCY__", "usd");
-
-//require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
-
-
-
 
 class stripe_marketplace_automatizer extends Module
 
@@ -182,6 +176,7 @@ class stripe_marketplace_automatizer extends Module
 
     public function create_account($nom)
     {
+        require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
         $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
 
         try{
