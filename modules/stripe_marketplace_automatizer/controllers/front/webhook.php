@@ -3,7 +3,9 @@
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
-require_once 'stripe-php/init.php';
+require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
+define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
+define("__CURRENCY__", "usd");
 
 /**
  * Author : Mahefa & Company
@@ -21,6 +23,7 @@ class WebHookStripe
 
 
     public function __construct(){
+        sleep(3);
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
         $this->readStreamWebhooks();
@@ -97,14 +100,12 @@ class WebHookStripe
         $amount = $order['total_paid'] -  (3*$order['total_paid']/100 + 0.40);
         $amount = (int) ($amount * 100);
 
-        $stripe = new \Stripe\StripeClient(
-            'sk_test_51H9qbOLKOBZ05EFrMyMNKmxekuCiFvRSDWV27qRd351mIW7v0EUmaTcPtbP7LHzHrkIpduQ0O4Zt2trkVHf2aRWh00gSz9Tz2V'
-        );
+        $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
     
         try{
             $stripe->transfers->create([
                 'amount' => $amount,
-                'currency' => 'usd',
+                'currency' => __CURRENCY__,
                 'destination' => $order['id_acct'],
                 'description' => 'Order no: ' . $order['id_order'] . ' SellerID: '. $order['id_seller'],
             ]);
@@ -113,8 +114,8 @@ class WebHookStripe
                 'id_seller' => $order['id_seller'],
                 'id_order' => $order['id_order'],
                 'id_acct' => $order['id_acct'],
-                'amount' => $amount,
-                'cause' => $e->getMessage(),
+                'amount' => $amount / 100,
+                'message' => $e->getMessage(),
             ));
         }
     }
@@ -195,6 +196,35 @@ class WebHookStripe
     private function generateUid(){
         return md5(uniqid());
     }
+
+    // protected function _installTab()
+    // {
+    //     Logger::log("Stripe::_installTab", [
+    //         'ok' => "ok",
+    //     ], "");
+        
+    //     $tab = new Tab();
+    //     $tab->class_name = 'AdminAcct';
+    //     //$tab->module = $this->name;
+    //     $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentPreferences');
+    //     $tab->icon = 'settings_applications';
+    //     $languages = Language::getLanguages();
+    //     //var_dump($languages);
+    //     foreach ($languages as $lang) {
+    //         $tab->name[$lang['id_lang']] = 'Vendeur';
+    //     }
+    //     try {
+    //         $tab->save();
+    //     } catch (Exception $e) {
+    //         echo $e->getMessage();
+    //         return false;
+    //     }
+ 
+    //     return true;
+    // }
+
+    
 }
+
 // Run the hook
 new WebHookStripe();
