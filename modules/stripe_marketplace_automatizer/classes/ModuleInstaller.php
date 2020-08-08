@@ -12,6 +12,7 @@ class ModuleInstaller {
 
     public static function install(){
 
+        $this->_installTab();
         return self::installSql();
 
     }
@@ -20,6 +21,7 @@ class ModuleInstaller {
 
     public static function uninstall(){
 
+        $this->_uninstallTab();
         return self::uninstallSql();
 
     }
@@ -87,6 +89,8 @@ class ModuleInstaller {
         $request = "
 
             DROP TABLE IF EXISTS "._DB_PREFIX_."sma_logger;
+            DROP TABLE IF EXISTS "._DB_PREFIX_."sma_seller_acct;
+            DROP TABLE IF EXISTS "._DB_PREFIX_."sma_transfer_rejected;
 
         ";
 
@@ -104,6 +108,41 @@ class ModuleInstaller {
 
     }
 
+    protected function _installTab()
+    {
+        Logger::log("ModuleInstaller::_installTab", [], "");
+        
+        $tab = new Tab();
+        $tab->class_name = 'AdminAcct';
+        $tab->module = "stripe_marketplace_automatizer";
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentPreferences');
+        $tab->icon = 'settings_applications';
+        $languages = Language::getLanguages();
+        foreach ($languages as $lang) {
+            $tab->name[$lang['id_lang']] = 'Vendeur';
+        }
+        try {
+            $tab->save();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+ 
+        return true;
+    }
 
+    protected function _uninstallTab()
+    {
+        Logger::log("ModuleInstaller::_uninstallTab", [], "");
+        
+        $tabId = (int)Tab::getIdFromClassName('AdminAcct');
+        if (!$tabId) {
+            return true;
+        }
+        $tab = new Tab($tabId);
+        $tab->delete();
+ 
+        return true;
+    }
 
 }

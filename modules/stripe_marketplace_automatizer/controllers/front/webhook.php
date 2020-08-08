@@ -195,33 +195,6 @@ class WebHookStripe
     private function generateUid(){
         return md5(uniqid());
     }
-
-    // protected function _installTab()
-    // {
-    //     Logger::log("Stripe::_installTab", [
-    //         'ok' => "ok",
-    //     ], "");
-        
-    //     $tab = new Tab();
-    //     $tab->class_name = 'AdminAcct';
-    //     //$tab->module = $this->name;
-    //     $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentPreferences');
-    //     $tab->icon = 'settings_applications';
-    //     $languages = Language::getLanguages();
-    //     //var_dump($languages);
-    //     foreach ($languages as $lang) {
-    //         $tab->name[$lang['id_lang']] = 'Vendeur';
-    //     }
-    //     try {
-    //         $tab->save();
-    //     } catch (Exception $e) {
-    //         echo $e->getMessage();
-    //         return false;
-    //     }
- 
-    //     return true;
-    // }
-
     
 }
 
