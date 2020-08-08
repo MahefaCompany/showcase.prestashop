@@ -1,5 +1,9 @@
 <?php
 
+if(!isset($_GET['whstripe'])){
+    return;
+}
+
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
