@@ -1,15 +1,13 @@
 <?php
 
 if(!isset($_GET['whstripe'])){
-    // die("tsy tafiditra");
     return;
 }
-// die("tafiditra");
 
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
-require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
-require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
+// require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
+// require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
 define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
 // define("__CURRENCY__", "usd");
@@ -58,14 +56,23 @@ class WebHookStripe
         ], $this->uid);
 
         try {
-            $event = \Stripe\Event::constructFrom(
-                json_decode($payload, true)
-            );
+            if($payload){
+                $event = \Stripe\Event::constructFrom(
+                    json_decode($payload, true)
+                );
+            }else{
+                // Empty payload
+                Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
+                    'messages' => "Empty payload",
+                ], $this->uid, 'error');
+                http_response_code(400);
+                exit();
+            }
+            
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
             Logger::log("WebHookStripe::readStreamWebhooks::".__LINE__, [
                 'messages' => "Invalid payload",
-            //    'variablaTianaHojerena' => null,
             ], $this->uid, 'error');
             http_response_code(400);
             exit();
