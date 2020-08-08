@@ -226,7 +226,7 @@ class stripe_marketplace_automatizer extends Module
                         ],
                     ],
                 ],
-                'account_token' => $tokenResuklt->id,
+                'account_token' => $tokenResult->id,
             ]);
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
                 'createResult' => $createResult,
