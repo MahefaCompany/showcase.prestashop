@@ -276,7 +276,7 @@ class stripe_marketplace_automatizer extends Module
             Alternative context: Context::getContext()->language->email
             Your main (BackOffice) email: Configuration::get("PS_SHOP_EMAIL") */
           
-            "andriniainanirison@gmail.com",
+            "abelmahefa@gmail.com",
             // --------
          
             // == OPTIONAL FIELDS ARE BELOW ==
