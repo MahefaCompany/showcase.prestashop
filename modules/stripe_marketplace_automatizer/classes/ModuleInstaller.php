@@ -12,7 +12,7 @@ class ModuleInstaller {
 
     public static function install(){
 
-        $this->_installTab();
+        self::_installTab();
         return self::installSql();
 
     }
@@ -21,7 +21,7 @@ class ModuleInstaller {
 
     public static function uninstall(){
 
-        $this->_uninstallTab();
+        self::_uninstallTab();
         return self::uninstallSql();
 
     }
@@ -108,7 +108,7 @@ class ModuleInstaller {
 
     }
 
-    protected function _installTab()
+    protected static function _installTab()
     {
         Logger::log("ModuleInstaller::_installTab", [], "");
         
@@ -131,7 +131,7 @@ class ModuleInstaller {
         return true;
     }
 
-    protected function _uninstallTab()
+    protected static function _uninstallTab()
     {
         Logger::log("ModuleInstaller::_uninstallTab", [], "");
         
