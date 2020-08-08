@@ -176,7 +176,7 @@ class stripe_marketplace_automatizer extends Module
     private function getSellerByCustomerId($id_customer)
     {
         $request = "SELECT id_seller FROM " . _DB_PREFIX_ . "kb_mp_seller WHERE id_customer = '$id_customer'";
-        $row =  $this->db->getRow($request);
+        $row =  \Db::getInstance()->getRow($request);
         return ($row) ? $row['id_seller'] : false;
     }
 
