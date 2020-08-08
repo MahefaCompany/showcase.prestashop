@@ -1,8 +1,7 @@
 <?php
 
 if(!isset($_GET['whstripe'])){
-    http_response_code(400);
-    exit();
+    return;
 }
 
 require_once __DIR__."/../../../../config/config.inc.php";
@@ -33,7 +32,6 @@ class WebHookStripe
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
 
-        sleep(5);
         $this->readStreamWebhooks();
 
         // ModuleInstaller::_uninstallTabById(187);
@@ -78,6 +76,8 @@ class WebHookStripe
             http_response_code(400);
             exit();
         }
+
+        sleep(5);
 
         // Handle the event
         switch ($event->type) {
