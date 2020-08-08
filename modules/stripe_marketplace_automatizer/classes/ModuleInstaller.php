@@ -45,6 +45,25 @@ class ModuleInstaller {
 
             );
 
+            CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."sma_seller_acct` (
+                `id` INT NOT NULL AUTO_INCREMENT,
+                `id_seller` int(11) NOT NULL,
+                `id_acct` varchar(255) NOT NULL,
+                PRIMARY KEY (`id`)
+            );
+
+            
+            CREATE TABLE `"._DB_PREFIX_."sma_transfer_rejected` (
+                `id` INT NOT NULL AUTO_INCREMENT , 
+                `id_seller` int(11) NOT NULL,
+                `id_order` int(11) NOT NULL,
+                `id_acct` varchar(255) NOT NULL,
+                `amount` double NOT NULL,
+                `message` text NOT NULL,
+                `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                PRIMARY KEY (`id`)
+            );
+
         ";
 
 
