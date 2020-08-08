@@ -44,8 +44,6 @@ class stripe_marketplace_automatizer extends Module
 
         $this->name = 'stripe_marketplace_automatizer';
 
-        // $this->tab = 'payments_gateways';
-
         $this->version = '1.0.0';
 
         $this->author = 'Mahefa';
