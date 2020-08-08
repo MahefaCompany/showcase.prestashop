@@ -62,7 +62,7 @@ class WebHookStripe
 
         // Handle the event
         switch ($event->type) {
-            case 'payment_intent.created':
+            // case 'payment_intent.created':
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object; // contains a \Stripe\PaymentIntent
                 $this->handlePaymentIntentSucceeded($paymentIntent);
@@ -86,8 +86,8 @@ class WebHookStripe
     }
 
     private function handlePaymentIntentSucceeded($paymentIntent){
-        $cart = $this->getCartByPaymentIntentID($paymentIntent->id);
-        $orders = $this->getOrdersByCartId($cart);
+        $cartId = $this->getCartByPaymentIntentID($paymentIntent->id);
+        $orders = $this->getOrdersByCartId($cartId);
         $orders = $this->getOrderSeller($orders);
         
         for ($i=0; $i < sizeof($orders); $i++) { 
@@ -140,8 +140,8 @@ class WebHookStripe
 
     private function getCart($paymentIntentID){
         $request = "SELECT id_cart FROM " . _DB_PREFIX_ . "stripe_payment WHERE id_payment_intent = '$paymentIntentID'";
-        $row =  $this->db->getRow($request);
-        return ($row) ? $row['id_cart'] : $row;
+        $idCart =  $this->db->getValue($request);
+        return ($idCart) ? $idCart : false;
     }
 
     private function getOrdersByCartId($cartId){
