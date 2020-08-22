@@ -9,9 +9,9 @@ require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php
 // require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
 // require_once _PS_MODULE_DIR_.'/stripe_official/classes/StripePayment.php';
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
-define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
-// define("__CURRENCY__", "usd");
-define("__CURRENCY__", "eur");
+// define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
+// // define("__CURRENCY__", "usd");
+// define("__CURRENCY__", "eur");
 
 /**
  * Author : Mahefa & Company
@@ -27,10 +27,17 @@ class WebHookStripe
 
     private $db;
 
+    private $conf;
+
 
     public function __construct(){
+
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
+        $this->conf['stripe_key'] = Configuration::get("STRIPE_TEST_KEY");
+        $this->conf['taux_commisson_variable'] = Configuration::get("SMA_TAUX_COMMISSION_VARIABLE");
+        $this->conf['taux_commisson_fixe'] = Configuration::get("SMA_TAUX_COMMISSION_FIXE");
+        $this->conf['sma_currency'] = Configuration::get("SMA_CURRENCY");
 
         $this->readStreamWebhooks();
 
@@ -122,15 +129,15 @@ class WebHookStripe
 
     private function transfert($order)
     {
-        $amount = $order['total_paid'] -  (3*$order['total_paid']/100 + 0.40);
+        $amount = $order['total_paid'] -  (((int) $this->conf['taux_commisson_variable']) *$order['total_paid']/100 + (float) $this->conf['taux_commisson_fixe'] );
         $amount = (int) ($amount * 100);
 
-        $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
+        $stripe = new \Stripe\StripeClient($this->conf['stripe_key']);
     
         try{
             $stripeTransfertCreateData = [
                 'amount' => $amount,
-                'currency' => __CURRENCY__,
+                'currency' => $this->conf['sma_currency'],
                 'destination' => $order['id_acct'],
                 'description' => 'Order no: ' . $order['id_order'] . ' SellerID: '. $order['id_seller'],
             ];
