@@ -10,28 +10,33 @@ $liste = (new \Liste())->all();
 
 if ($_POST) {
     \Stripe\Stripe::setApiKey('sk_test_51H9qbOLKOBZ05EFrMyMNKmxekuCiFvRSDWV27qRd351mIW7v0EUmaTcPtbP7LHzHrkIpduQ0O4Zt2trkVHf2aRWh00gSz9Tz2V');
-  $error = '';
-  $success = '';
-  try {
-    if (!isset($_POST['tokenAccount']))
-      throw new Exception("The Stripe Token was not generated correctly");
-      $token = $_POST['tokenAccount'];
+    $error = '';
+    $success = '';
+    try {
+        if (!isset($_POST['tokenAccount']))
+            throw new Exception("The Stripe Token was not generated correctly");
+        $token = $_POST['tokenAccount'];
         $account = \Stripe\Account::create([
             'country' => 'US',
             'type' => 'custom',
             'default_currency' => 'usd',
                 'requested_capabilities' => [
-                  'card_payments',
-                  'transfers',
+                'card_payments',
+                'transfers',
             ],
             'account_token' => $token,
         ]);
-    echo $success = 'successful.';
-  }
-  catch (Exception $e) {
-    echo $error = $e->getMessage();
-  }
-  exit();
+        echo json_encode([
+            "message" => "successful",
+            "resultStripe" => $account,
+        ]);
+    }catch (Exception $e) {
+        echo json_encode([
+            "message" => "error",
+            "resultStripe" => $e->getMessage(),
+        ]);
+    }
+    exit();
 }
 
 ?>
@@ -46,46 +51,15 @@ if ($_POST) {
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     </head>
     <body>
-        <!-- to display errors returned by createToken -->
-        <!-- <span class="payment-errors"><?= $error ?? "error)" ?></span>
-        <span class="payment-success"><?= $success ?? "success)" ?></span>
-        <form action="" method="POST" id="payment-form">
-            <div class="form-row">
-                <label>Card Number</label>
-                <input type="text" size="20" autocomplete="off" class="card-number" value="4242424242424242"/>
-            </div>
-            <div class="form-row">
-                <label>CVC</label>
-                <input type="text" size="4" autocomplete="off" class="card-cvc" value="123"/>
-            </div>
-            <div class="form-row">
-                <label>Expiration (MM/YYYY)</label>
-                <input type="text" size="2" class="card-expiry-month" value="11"/>
-                <span> / </span>
-                <input type="text" size="4" class="card-expiry-year" value="21" />
-            </div>
-            <input type="hidden" name="token-person" id="token-person">
-            <input type="hidden" name="token-account" id="token-account">
-            <button type="submit" class="submit-button">Submit</button>
-        </form> -->
-
         <script type="text/javascript">
-
             function sleep(ms, cqllbqck) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-            // setTimeout(function(){
-            //     cqllbqck();
-            // }, ms);
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            // Assumes you've already included Stripe.js!
             const stripe = Stripe('pk_test_51H9qbOLKOBZ05EFrCh6Xiq5ybWDUzwEJsLymddhp9SIIPRucjawLdJImgj1eJqFZS7oH8O8YOsHogAAcSkpWSuA700drl1cgFX');
             const myForm = document.querySelector('#payment-form');
-            // myForm.addEventListener('submit', handleForm);
 
             async function handleForm() {
-                // event.preventDefault();
-
                 let listVendeur = '<?= $liste ?>';
                 listVendeur = JSON.parse(listVendeur);
                 // console.log("handleForm", listVendeur);
@@ -122,8 +96,6 @@ if ($_POST) {
                 });
 
                 if (accountResult.token && personResult.token) {
-                    // document.querySelector('#token-account').value = accountResult.token.id;
-                    // document.querySelector('#token-person').value = personResult.token.id;
                     createAccount(accountResult, personResult);
                 }
             }
@@ -137,9 +109,9 @@ if ($_POST) {
             function createAccount(accountResult, personResult){
                 console.log("createAccount", accountResult, personResult);
                 const data = {
-                        "tokenAccount": accountResult.token.id, 
-                        // "tokenAccount": personResult.token.id
-                    };
+                    "tokenAccount": accountResult.token.id, 
+                    // "tokenAccount": personResult.token.id
+                };
                 console.log("createAccount", data);
                 $.ajax({
                     url : 'https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/index.php',
@@ -155,12 +127,9 @@ if ($_POST) {
                     error : function(resultat, statut, erreur){
 
                     }
-
                 });
             }
             
-            
-            // Start function
             const start = async function() {
                 const result = await handleForm();
             }
