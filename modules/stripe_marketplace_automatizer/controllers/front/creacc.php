@@ -15,7 +15,7 @@ if ($_POST) {
         return \Db::getInstance()->execute($request);
     }
 
-    \Stripe\Stripe::setApiKey('sk_test_iLXqSeMiKZXcexyjxqQSChl0');
+    \Stripe\Stripe::setApiKey('sk_live_x8dnQY5RNsLmiiBGAgFNYc0r');
     try {
         if (!isset($_POST['tokenAccount']))
             die(json_encode([
@@ -78,7 +78,7 @@ if ($_POST) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            const stripe = Stripe('pk_test_xRSiDl60ZAwr2qbXZhk7NOAf');
+            const stripe = Stripe('pk_live_HoXZ5xXUBQ1JpJIFrDXBNQHy');
             const myForm = document.querySelector('#payment-form');
 
             async function handleForm() {
