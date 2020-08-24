@@ -20,7 +20,15 @@ if ($_POST) {
     $success = '';
     try {
         if (!isset($_POST['tokenAccount']))
-            throw new Exception("The Stripe Token was not generated correctly");
+            die(json_encode([
+                "code" => "error_not_good_parametter",
+                "message" => "tokenAccount missing",
+            ]));
+        if (!isset($_POST['id_seller']))
+            die(json_encode([
+                "code" => "error_not_good_parametter",
+                "message" => "id_seller missing",
+            ]));
         $token = $_POST['tokenAccount'];
         $account = \Stripe\Account::create([
             'country' => 'US',
@@ -33,7 +41,7 @@ if ($_POST) {
             'account_token' => $token,
         ]);
         if($account["object"] == 'account'){
-            $id_seller = ;
+            $id_seller = $_POST['id_seller'];
             $id_acct = $account["id"];
             updateSellerInfo($id_seller, $id_acct);
             echo json_encode([
@@ -41,16 +49,16 @@ if ($_POST) {
                 "resultStripe" => $account,
             ]);
         }else{
-            echo json_encode([
+            die(json_encode([
                 "message" => "error_not_good_response",
                 "resultStripe" => $account,
-            ]);
+            ]));
         }
     }catch (Exception $e) {
-        echo json_encode([
+        die(json_encode([
             "message" => "error_exception",
             "resultStripe" => $e->getMessage(),
-        ]);
+        ]));
     }
     exit();
 }
@@ -122,11 +130,12 @@ if ($_POST) {
             }
             
 
-            function createAccount(accountResult, personResult){
+            function createAccount(accountResult, personResult, id_seller){
                 console.log("createAccount", accountResult, personResult);
                 const data = {
                     "tokenAccount": accountResult.token.id, 
                     // "tokenAccount": personResult.token.id
+                     "id_seller": id_seller,
                 };
                 console.log("createAccount", data);
                 $.ajax({
