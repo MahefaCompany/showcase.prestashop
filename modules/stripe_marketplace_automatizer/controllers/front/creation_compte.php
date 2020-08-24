@@ -18,7 +18,7 @@ class Creation
         $this->db = \Db::getInstance();
         $this->conf['sma_currency'] = Configuration::get("SMA_CURRENCY");
         $this->conf['sma_country'] = Configuration::get("SMA_COUNTRY");
-        $this->conf['stripe_key'] = "sk_test_srgpz8vJRxo0mar9tGsjfOJU";
+        $this->conf['stripe_key'] = "sk_live_x8dnQY5RNsLmiiBGAgFNYc0r";
 
         foreach ($this->getAllSeller() as $row) {
             $nom = $row['firstname']." ".$row['lastname'];
