@@ -29,10 +29,10 @@ if ($_POST) {
             ]));
         $token = $_POST['tokenAccount'];
         $account = \Stripe\Account::create([
-            'country' => 'US',
+            'country' => 'FR',
             'type' => 'custom',
-            'default_currency' => 'usd',
-                'requested_capabilities' => [
+            'default_currency' => 'eur',
+            'requested_capabilities' => [
                 'card_payments',
                 'transfers',
             ],
@@ -57,6 +57,48 @@ if ($_POST) {
             "message" => "error_exception",
             "resultStripe" => $e->getMessage(),
         ]));
+    }
+    exit();
+}
+if (isset($_GET["update_connected_account"])) {
+    // https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/creacc.php?update_connected_account
+    function getSellerIds(){
+        $request = "SELECT id_acct FROM "._DB_PREFIX_. "sma_seller_acct WHERE test=1 ORDER BY id DESC";
+        return \Db::getInstance()->executeS($request);
+    }
+    function deleteSellerId($idAcct){
+        $request = "DELETE FROM "._DB_PREFIX_. "sma_seller_acct WHERE id_acct='".$idAcct."'";
+        return \Db::getInstance()->execute($request);
+    }
+
+    $idAccts = getSellerIds();
+    foreach($idAccts as $connectedAccountID){
+        dump($connectedAccountID); die;
+        $stripe = new \Stripe\StripeClient('sk_live_x8dnQY5RNsLmiiBGAgFNYc0r');
+        try {
+            $account = $stripe->accounts->delete(
+                $connectedAccountID["id_acct"],
+                []
+              );
+            if($account["object"] == 'account'){
+                deleteSellerId($account["id"]);
+                dump($account);
+                // die(json_encode([
+                //     "message" => "successful",
+                //     "resultStripe" => $account,
+                // ]));
+            }else{
+                die(json_encode([
+                    "message" => "error_not_good_response",
+                    "resultStripe" => $account,
+                ]));
+            }
+        }catch (Exception $e) {
+            die(json_encode([
+                "message" => "error_exception",
+                "resultStripe" => $e->getMessage(),
+            ]));
+        }
     }
     exit();
 }
