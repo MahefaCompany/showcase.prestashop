@@ -15,9 +15,7 @@ if ($_POST) {
         return \Db::getInstance()->execute($request);
     }
 
-    \Stripe\Stripe::setApiKey('sk_test_srgpz8vJRxo0mar9tGsjfOJU');
-    $error = '';
-    $success = '';
+    \Stripe\Stripe::setApiKey('sk_test_iLXqSeMiKZXcexyjxqQSChl0');
     try {
         if (!isset($_POST['tokenAccount']))
             die(json_encode([
@@ -44,10 +42,10 @@ if ($_POST) {
             $id_seller = $_POST['id_seller'];
             $id_acct = $account["id"];
             updateSellerInfo($id_seller, $id_acct);
-            echo json_encode([
+            die(json_encode([
                 "message" => "successful",
                 "resultStripe" => $account,
-            ]);
+            ]));
         }else{
             die(json_encode([
                 "message" => "error_not_good_response",
@@ -80,7 +78,7 @@ if ($_POST) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            const stripe = Stripe('pk_test_HgZMtZsdQxQGIqgbNXSf2vFe');
+            const stripe = Stripe('pk_test_xRSiDl60ZAwr2qbXZhk7NOAf');
             const myForm = document.querySelector('#payment-form');
 
             async function handleForm() {
@@ -139,7 +137,7 @@ if ($_POST) {
                 };
                 console.log("createAccount", data);
                 $.ajax({
-                    url : 'https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/index.php',
+                    url : 'https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/creacc.php',
                     type : 'POST',
                     // dataType : 'json',
                     // crossDomain: true,
