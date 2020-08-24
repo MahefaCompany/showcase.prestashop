@@ -9,7 +9,13 @@ $liste = (new \Liste())->all();
 // dump($liste); die;
 
 if ($_POST) {
-    \Stripe\Stripe::setApiKey('sk_test_51H9qbOLKOBZ05EFrMyMNKmxekuCiFvRSDWV27qRd351mIW7v0EUmaTcPtbP7LHzHrkIpduQ0O4Zt2trkVHf2aRWh00gSz9Tz2V');
+
+    function updateSellerInfo($id_seller, $id_acct){
+        $request = "INSERT INTO "._DB_PREFIX_. "sma_seller_acct (id_seller, id_acct) VALUES ('".$id_seller."', '".$id_acct."')";
+        return $this->db->executeS($request);
+    }
+
+    \Stripe\Stripe::setApiKey('sk_test_srgpz8vJRxo0mar9tGsjfOJU');
     $error = '';
     $success = '';
     try {
@@ -26,13 +32,23 @@ if ($_POST) {
             ],
             'account_token' => $token,
         ]);
-        echo json_encode([
-            "message" => "successful",
-            "resultStripe" => $account,
-        ]);
+        if($account["object"] == 'account'){
+            $id_seller = ;
+            $id_acct = $account["id"];
+            updateSellerInfo($id_seller, $id_acct);
+            echo json_encode([
+                "message" => "successful",
+                "resultStripe" => $account,
+            ]);
+        }else{
+            echo json_encode([
+                "message" => "error_not_good_response",
+                "resultStripe" => $account,
+            ]);
+        }
     }catch (Exception $e) {
         echo json_encode([
-            "message" => "error",
+            "message" => "error_exception",
             "resultStripe" => $e->getMessage(),
         ]);
     }
@@ -56,7 +72,7 @@ if ($_POST) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            const stripe = Stripe('pk_test_51H9qbOLKOBZ05EFrCh6Xiq5ybWDUzwEJsLymddhp9SIIPRucjawLdJImgj1eJqFZS7oH8O8YOsHogAAcSkpWSuA700drl1cgFX');
+            const stripe = Stripe('pk_test_HgZMtZsdQxQGIqgbNXSf2vFe');
             const myForm = document.querySelector('#payment-form');
 
             async function handleForm() {
