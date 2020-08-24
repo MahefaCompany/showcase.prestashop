@@ -12,7 +12,7 @@ if ($_POST) {
 
     function updateSellerInfo($id_seller, $id_acct){
         $request = "INSERT INTO "._DB_PREFIX_. "sma_seller_acct (id_seller, id_acct) VALUES ('".$id_seller."', '".$id_acct."')";
-        return $this->db->executeS($request);
+        return \Db::getInstance()->execute($request);
     }
 
     \Stripe\Stripe::setApiKey('sk_test_srgpz8vJRxo0mar9tGsjfOJU');
@@ -120,7 +120,7 @@ if ($_POST) {
                 });
 
                 if (accountResult.token && personResult.token) {
-                    createAccount(accountResult, personResult);
+                    createAccount(accountResult, personResult, item.id_seller);
                 }
             }
 
