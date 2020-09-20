@@ -73,7 +73,7 @@ if (isset($_GET["update_connected_account"])) {
 
     $idAccts = getSellerIds();
     foreach($idAccts as $connectedAccountID){
-        dump($connectedAccountID); die;
+        // dump($connectedAccountID); die;
         $stripe = new \Stripe\StripeClient('sk_live_x8dnQY5RNsLmiiBGAgFNYc0r');
         try {
             $account = $stripe->accounts->delete(

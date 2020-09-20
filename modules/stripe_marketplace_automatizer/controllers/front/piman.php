@@ -34,7 +34,7 @@ class WebHookStripe
 
         $this->uid = $this->generateUid();
         $this->db = \Db::getInstance();
-        $this->conf['stripe_key'] = Configuration::get("STRIPE_TEST_KEY");
+        $this->conf['stripe_key'] = (Configuration::get("STRIPE_MODE") == '0') ? Configuration::get("STRIPE_KEY") : Configuration::get("STRIPE_TEST_KEY");
         $this->conf['taux_commisson_variable'] = Configuration::get("SMA_TAUX_COMMISSION_VARIABLE");
         $this->conf['taux_commisson_fixe'] = Configuration::get("SMA_TAUX_COMMISSION_FIXE");
         $this->conf['sma_currency'] = Configuration::get("SMA_CURRENCY");

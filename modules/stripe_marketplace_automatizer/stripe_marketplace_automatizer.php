@@ -12,15 +12,16 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/ModuleInstaller.php";
 require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/classes/Logger.php";
-define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
+//define("__STRIPE_KEY__", Configuration::get("STRIPE_TEST_KEY"));
 // define("__COUNTRY__", "US");
 // define("__CURRENCY__", "usd");
-define("__COUNTRY__", "FR");
-define("__CURRENCY__", "eur");
+// define("__COUNTRY__", "FR");
+// define("__CURRENCY__", "eur");
 
 class stripe_marketplace_automatizer extends Module
 
 {
+    private $conf;
 
     public static $webhook_events = array(
 
@@ -41,7 +42,6 @@ class stripe_marketplace_automatizer extends Module
 
 
     public function __construct()
-
     {
 
         $this->name = 'stripe_marketplace_automatizer';
@@ -60,9 +60,13 @@ class stripe_marketplace_automatizer extends Module
 
         $this->currencies = true;
 
-
+        $this->conf['stripe_key'] = (Configuration::get("STRIPE_MODE") == '0') ? Configuration::get("STRIPE_KEY") :  Configuration::get("STRIPE_TEST_KEY");
+        $this->conf['sma_currency'] = Configuration::get("SMA_CURRENCY");
+        $this->conf['sma_country'] = Configuration::get("SMA_COUNTRY");
 
         parent::__construct();
+
+        //var_dump($this->registerHook('displayBackOfficeHeader'));
 
 
         $this->meta_title = $this->l('Stripe Marketplace Automatizer', $this->name);
@@ -72,7 +76,6 @@ class stripe_marketplace_automatizer extends Module
         $this->description = $this->l('Start accepting stripe payments today, directly from your shop!', $this->name);
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?', $this->name);
-
 
 
         // Logger::log("stripe_marketplace_automatizer::__construct:".__LINE__);
@@ -146,13 +149,14 @@ class stripe_marketplace_automatizer extends Module
                     Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                         'message' => "New customer (Seller)",
                     ], '');
-                    $data['id_acct'] = $this->create_account($params['newCustomer']->firstname .' '. $params['newCustomer']->lastname);
+                    $data['id_acct'] = $this->create_account($this->getAccoutTokenByEmail($params['newCustomer']->email));
                     $idSellerAcct = \Db::getInstance()->insert('sma_seller_acct', $data);
                     if(isset($data['id_acct'])){
                         Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
                             'message' => "Seller created (stripe and sma_seller_acct)",
                             'idSellerAcct' => $idSellerAcct
                         ], '');
+                        $this->deleteTokenByEmail($params['newCustomer']->email);
                         $this->notifyOwnerThatSellerCreated($params['newCustomer'], $data['id_seller'], $data['id_acct']);
                     }else{
                         Logger::log("stripe_marketplace_automatizer::hookActionCustomerAccountAdd:".__LINE__, [
@@ -185,36 +189,49 @@ class stripe_marketplace_automatizer extends Module
         return ($row) ? $row['id_seller'] : false;
     }
 
+    private function getAccoutTokenByEmail($email)
+    {
+        $request = "SELECT token FROM " . _DB_PREFIX_ . "sma_account_token WHERE email = '$email'";
+        $row =  \Db::getInstance()->getRow($request);
+        return ($row) ? $row['token'] : false;
+    }
+
+    private function deleteTokenByEmail($email)
+    {
+        $sql = "DELETE FROM "._DB_PREFIX_."sma_account_token WHERE email = '". $email . "'";
+        \Db::getInstance()->execute($sql);
+    }
+
     /**
      * https://stripe.com/docs/api/tokens/create_account?lang=php
      */
-    public function create_account($nom)
+    public function create_account($token)
     {
         require_once _PS_MODULE_DIR_."/stripe_marketplace_automatizer/stripe-php/init.php";
-        $stripe = new \Stripe\StripeClient(__STRIPE_KEY__);
+    $stripe = new \Stripe\StripeClient($this->conf['stripe_key']);
 
         try{
-            $tokenResult = $stripe->tokens->create([
-                'account' => [
-                    // 'individual' => [
-                    //     'first_name' => 'Jane',
-                    //     'last_name' => 'Doe',
-                    // ],
-                    'company' => [
-                        'name' => $nom,
-                        // 'last_name' => $nom,
-                    ],
-                    'tos_shown_and_accepted' => true,
-                ],
-            ]);
-            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'tokenResult' => $tokenResult,
-            ]);
+            // $tokenResult = $stripe->tokens->create([
+            //     'account' => [
+            //         // 'individual' => [
+            //         //     'first_name' => 'Jane',
+            //         //     'last_name' => 'Doe',
+            //         // ],
+            //         'company' => [
+            //             'name' => $nom,
+            //             // 'last_name' => $nom,
+            //         ],
+            //         'tos_shown_and_accepted' => true,
+            //     ],
+            // ]);
+            // Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+            //     'tokenResult' => $tokenResult,
+            // ]);
 
             $createResult = $stripe->accounts->create([
                 'type' => 'custom',
-                'country' => __COUNTRY__,
-                'default_currency' => __CURRENCY__,
+                'country' => $this->conf['sma_country'],
+                'default_currency' => $this->conf['sma_currency'],
                 'requested_capabilities' => [
                   'card_payments',
                   'transfers',
@@ -231,24 +248,24 @@ class stripe_marketplace_automatizer extends Module
                         ],
                     ],
                 ],
-                'account_token' => $tokenResult->id,
+                'account_token' => $token,
             ]);
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
                 'createResult' => $createResult,
             ]);
 
-            $accUpdateResult = $stripe->accounts->update(
-                $createResult->id,
-                [
-                    'tos_acceptance' => [
-                    'date' => time(),
-                    'ip' => $_SERVER['REMOTE_ADDR'], // Assumes you're not using a proxy
-                    ],
-                ]
-            );
-            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'accUpdateResult' => $accUpdateResult,
-            ]);
+            // $accUpdateResult = $stripe->accounts->update(
+            //     $createResult->id,
+            //     [
+            //         'tos_acceptance' => [
+            //         'date' => time(),
+            //         'ip' => $_SERVER['REMOTE_ADDR'], // Assumes you're not using a proxy
+            //         ],
+            //     ]
+            // );
+            // Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+            //     'accUpdateResult' => $accUpdateResult,
+            // ]);
     
         }catch (Exception $e){
             Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
@@ -258,6 +275,7 @@ class stripe_marketplace_automatizer extends Module
         }
         return $createResult->id;
     }
+
 
     private function notifyOwnerThatSellerCreated($newCustomer, $idSeller, $idAcct){
         Mail::Send(
@@ -370,6 +388,20 @@ class stripe_marketplace_automatizer extends Module
             null
             // --------
         );
+    }
+
+    public function hookDisplayHeader($params)
+    {
+        if('authentication' ===$this->context->controller->php_self)
+        {
+            $this->context->controller->addJS('https://js.stripe.com/v3/');
+            $this->context->controller->addJS($this->_path.'views/js/hook_create_account.js');
+        }
+    }
+
+    public function hookDisplayBackOfficeHeader($params)
+    {
+        
     }
 
 }
