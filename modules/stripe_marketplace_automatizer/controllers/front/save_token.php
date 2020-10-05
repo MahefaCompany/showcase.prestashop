@@ -10,13 +10,15 @@ if (isset($_POST['email']) && isset($_POST['tokenaccount'])) {
         return \Db::getInstance()->execute($request);
     }
 
-    if(updateTokenInfo($_POST['email'], $_POST['tokenaccount']))
-    {
+    if(updateTokenInfo($_POST['email'], $_POST['tokenaccount'])){
         echo "success";
+        Logger::log("save_token", [
+            'message' => "success",
+        ]);
     }
     exit();
 }else{
     Logger::log("save_token", [
-        'message' => "",
-    ], $this->uid);
+        'message' => "_POST[email] ou _POST[tokenaccount] vide",
+    ]);
 }
