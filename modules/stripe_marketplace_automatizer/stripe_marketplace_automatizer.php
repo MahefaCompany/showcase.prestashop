@@ -395,13 +395,30 @@ class stripe_marketplace_automatizer extends Module
         if('authentication' ===$this->context->controller->php_self)
         {
             $this->context->controller->addJS('https://js.stripe.com/v3/');
-            $this->context->controller->addJS($this->_path.'views/js/hook_create_account.js');
+            $this->context->controller->addJS(
+                $this->getUrl()."/modules/".$this->name."/views/js/hook_create_account.js"
+            );
+            // if(Tools::getValue("debug")){
+            //     var_dump($this->getUrl()); die;
+            // }
         }
     }
 
     public function hookDisplayBackOfficeHeader($params)
     {
         
+    }
+
+    private function checkIfHttps(){
+        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+            return 'https';
+        } else {
+            return 'http';
+        }
+    }
+
+    private function getUrl(){
+        return $this->checkIfHttps() . "://" . $_SERVER["SERVER_NAME"];
     }
 
 }

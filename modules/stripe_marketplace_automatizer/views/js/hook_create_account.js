@@ -8,14 +8,11 @@ $(document).ready(function(){
 
             $(document).on("submit", "#account-creation_form", function(event) {
                 event.preventDefault();
-                if($("#kbmp_registered_as_seller:checked").val() == 1)
-                {
+                if($("#kbmp_registered_as_seller:checked").val() == 1){
                     handleForm(stripe); 
-                }
-                else
-                {
+                }else{
                     $(document).off("submit", "#account-creation_form");
-                    $("#account-creation_form").submit();   
+                    $("#account-creation_form").submit();
                 }
             });
 
@@ -39,28 +36,22 @@ $(document).ready(function(){
 
         if (accountResult.token) {
             var email = $('#email').val();
-            $.post( "https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/save_token.php", 
-                { 
-                    email: email, 
-                    tokenaccount: accountResult.token.id,
-                }
-            )
-                .done(function(data) {
-                    if(data == 'success')
-                    {
-                        $(document).off("submit", "#account-creation_form");
-                        $("#account-creation_form").submit();
-                    }
-                    else
-                    {
-                        console.log('erreur inconnue');
-                    }
-                })
-
-                .fail(function() {
+            $.post( "https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/save_token.php", { 
+                email: email, 
+                tokenaccount: accountResult.token.id,
+            })
+            .done(function(data) {
+                if(data == 'success'){
                     $(document).off("submit", "#account-creation_form");
                     $("#account-creation_form").submit();
-                });
+                }else{
+                    console.log('erreur inconnue');
+                }
+            })
+            .fail(function() {
+                $(document).off("submit", "#account-creation_form");
+                $("#account-creation_form").submit();
+            });
         }
     }
 });
