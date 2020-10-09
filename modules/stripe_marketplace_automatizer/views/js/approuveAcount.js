@@ -6,21 +6,21 @@ $(document).ready(function () {
       "https://lecannet.cliccommerce.fr/modules/stripe_marketplace_automatizer/controllers/front/show_pk_stripe.php"
     )
     .done(function (data) {
-      console.log(data);
       window.pk_stripe = data;
 
       const stripe = Stripe(window.pk_stripe);
-
+     
+      $("table.kb_mp_seller>tbody>tr>td:last-child ul.dropdown-menu>li:first-child").on("click", function (event) {
+        window.stop
+        event.preventDefault()
+        idSeller = $(this).parent().parent().parent().parent().parent().children("td:nth-child(2)").text().trim();
+        firstName = $(this).parent().parent().parent().parent().parent().children("td:nth-child(3)").text().trim()
+        lastName = $(this).parent().parent().parent().parent().parent().children("td:nth-child(4)").text().trim()
+        email = $(this).parent().parent().parent().parent().parent().children("td:nth-child(5)").text().trim()
+        console.log(idSeller,"\n",firstName,"\n",lastName,"\n",email )
+        sendRequiresDatastoBeApprouved(stripe, firstName, lastName, idSeller, email);
+      });
     })
-
-  $("table.kb_mp_seller>tbody>tr>td:last-child>ul.dropdown-menu>li:first-child>a").on("click", function () {
-    idSeller = $(this).parent().parent().parent().parent().parent().parent().children("td:nth-child(2)").html()
-    firstName = $(this).parent().parent().parent().parent().parent().parent().children("td:nth-child(3)").html()
-    lastName = $(this).parent().parent().parent().parent().parent().parent().children("td:nth-child(4)").html()
-    email = $(this).parent().parent().parent().parent().parent().parent().children("td:nth-child(5)").html()
-
-    sendRequiresDatastoBeApprouved(stripe, firstName, lastName, idSeller, email);
-  });
 
   async function sendRequiresDatastoBeApprouved(stripe, _firstName, _lastName, _idSeller = null, _email) {
 
