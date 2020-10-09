@@ -228,9 +228,10 @@ class stripe_marketplace_automatizer extends Module
             // ]);
     
         }catch (Exception $e){
-            Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
-                'message' => pSQL($e->getMessage()),
-            ], '', 'error');
+            // Logger::log("stripe_marketplace_automatizer::create_account:".__LINE__, [
+            //     'message' => pSQL($e->getMessage()),
+            // ], '', 'error');
+            die($e->getMessage());
             return null;
         }
         return $createResult->id;
@@ -385,26 +386,34 @@ class stripe_marketplace_automatizer extends Module
     }
 
     static public function createConnectedUser($customer){
+        $stripe_marketplace_automatizer=new stripe_marketplace_automatizer();
         Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
             'customer' => $customer,
         ]);
 
         try{
+            Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
+                'message' => "passage 1",
+            ]);
             if(isset($customer)){
-                $data['id_seller'] = $this->getSellerByCustomerId($customer->id);
+                $data['id_seller'] = $stripe_marketplace_automatizer->getSellerByCustomerId($customer->id);
+                Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
+                    'message' => "passage 2",
+                    'data' => $data,
+                ]);
                 if($data['id_seller'] != false){ // If seller
                     Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
                         'message' => "New customer (Seller)",
                     ], '');
-                    $data['id_acct'] = $this->create_account($this->getAccoutTokenByEmail($customer->email));
+                    $data['id_acct'] = $stripe_marketplace_automatizer->create_account($stripe_marketplace_automatizer->getAccoutTokenByEmail($customer->email));
                     $idSellerAcct = \Db::getInstance()->insert('sma_seller_acct', $data);
                     if(isset($data['id_acct'])){
                         Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
                             'message' => "Seller created (stripe and sma_seller_acct)",
                             'idSellerAcct' => $idSellerAcct
                         ], '');
-                        $this->deleteTokenByEmail($customer->email);
-                        $this->notifyOwnerThatSellerCreated($customer, $data['id_seller'], $data['id_acct']);
+                        $stripe_marketplace_automatizer->deleteTokenByEmail($customer->email);
+                        $stripe_marketplace_automatizer->notifyOwnerThatSellerCreated($customer, $data['id_seller'], $data['id_acct']);
                     }else{
                         Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
                             'message' => "Seller not created (has a problem)",
@@ -421,9 +430,10 @@ class stripe_marketplace_automatizer extends Module
                 ], '', 'error');
             }
         }catch (Exception $e){
-            Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
-                'message' => pSQL($e->getMessage()),
-            ], '', 'error');
+            // Logger::log("stripe_marketplace_automatizer::createConnectedUser:".__LINE__, [
+            //     'message' => $e->getMessage(),
+            // ], '', 'error');
+            die($e->getMessage());
             return null;
         }
     }
