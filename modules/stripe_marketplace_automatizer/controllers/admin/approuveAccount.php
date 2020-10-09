@@ -1,5 +1,4 @@
 <?php
-echo "this is Approuve file";
 
 require_once __DIR__."/../../../../config/config.inc.php";
 require_once __DIR__."/../../vendor/autoload.php";
@@ -19,7 +18,7 @@ $customer =(object) [
     'email' => $_POST["email"]
 ];
 
-// stripe_marketplace_automatizer::createConnectedUser($customer);
+stripe_marketplace_automatizer::createConnectedUser($customer);
 Logger::log("approuveAcount.php::getCustomerIdByIdSeller".__LINE__, [
     'customer' => $customer,
 ]);
@@ -32,5 +31,3 @@ function getCustomerIdByIdSeller($_idSeller)
     $customer =  \Db::getInstance()->getRow($request);
     return ($customer) ? $customer['id_customer'] : false;
 }
-
-echo "Approuve Successed";
